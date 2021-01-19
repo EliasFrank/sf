@@ -1,7 +1,7 @@
 package com.hl.sf.entity;
 
 import com.hl.sf.SfApplicationTests;
-import com.hl.sf.mapper.UserDao;
+import com.hl.sf.repository.UserDao;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

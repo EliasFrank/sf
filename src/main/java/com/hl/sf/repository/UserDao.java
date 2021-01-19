@@ -1,4 +1,4 @@
-package com.hl.sf.mapper;
+package com.hl.sf.repository;
 
 import com.hl.sf.entity.User;
 

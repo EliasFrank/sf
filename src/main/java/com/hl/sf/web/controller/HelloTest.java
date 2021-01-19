@@ -1,7 +1,7 @@
-package com.hl.sf.controller;
+package com.hl.sf.web.controller;
 
 import com.hl.sf.entity.User;
-import com.hl.sf.mapper.UserDao;
+import com.hl.sf.repository.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
