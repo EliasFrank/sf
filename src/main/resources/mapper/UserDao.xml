@@ -3,7 +3,32 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hl.sf.repository.UserDao">
 
-    <select id="getUserByID" resultType="com.hl.sf.entity.User">
-        select * from user where id = #{id}
+    <select id="getUserById" resultMap="user">
+        select u.*, r.id rid, r.user_id rud, r.name rname
+        from `user` u RIGHT JOIN role r on r.user_id = u.id
+        where u.id =  #{id}
     </select>
+
+    <select id="getUserByName" resultMap="user">
+        select u.*, r.id rid, r.user_id rud, r.name rname
+        from `user` u RIGHT JOIN role r on r.user_id = u.id
+        where u.name =  #{name}
+    </select>
+    <resultMap id="user" type="com.hl.sf.entity.UserInfo">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="password" column="password"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="lastUpdateTime" column="last_update_time"/>
+        <result property="avatar" column="avatar"/>
+        <result property="email" column="email"/>
+        <collection property="roles" ofType="com.hl.sf.entity.Role">
+            <id property="id" column="rid"/>
+            <result property="userId" column="rud"/>
+            <result property="name" column="rname"/>
+        </collection>
+    </resultMap>
 </mapper>

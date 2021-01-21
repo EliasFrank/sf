@@ -2,11 +2,13 @@ package com.hl.sf.entity;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author hl2333
  */
 @Data
-public class User {
+public class UserInfo {
     private Long id;
 
     private String name;
@@ -25,4 +27,7 @@ public class User {
 
     private String avatar;
 
+    private int status;
+
+    private List<Role> roles;
 }

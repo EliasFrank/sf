@@ -16,6 +16,7 @@
 
     <properties>
         <java.version>11</java.version>
+        <thymeleaf-extras-springsecurity.version>3.0.3.RELEASE</thymeleaf-extras-springsecurity.version>
     </properties>
 
     <dependencies>
@@ -64,6 +65,15 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.thymeleaf</groupId>
+            <artifactId>thymeleaf-spring5</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+            <version>${thymeleaf-extras-springsecurity.version}</version>
         </dependency>
 
         <!--web模块-->

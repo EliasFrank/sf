@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  * @author hl2333
  */
 @Configuration
-@MapperScan("com.hl.sf.mapper")
+@MapperScan("com.hl.sf.repository")
 public class MybatisConfig {
     @Bean
     public ConfigurationCustomizer configurationCustomizer(){
