@@ -1,5 +1,7 @@
 package com.hl.sf.config;
 
+import com.hl.sf.security.LoginAuthFailHandler;
+import com.hl.sf.security.LoginUrlEntryPoint;
 import com.hl.sf.service.MyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -48,19 +50,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 //配置角色登录处理入口
                 .loginProcessingUrl("/login")
+                .failureHandler(authFailHandler())
                 .and()
                 .logout()
-                .logoutUrl("/logout2")
+                .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
                 .deleteCookies("JSESSIONID")
                 .invalidateHttpSession(true)
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(urlEntryPoint())
+                .accessDeniedPage("/403")
                 .and();
 
-    }
-
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder(){
-        return new BCryptPasswordEncoder();
     }
 
     @Override
@@ -81,4 +83,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             }
         });
     }*/
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public LoginUrlEntryPoint urlEntryPoint(){
+        return new LoginUrlEntryPoint("/user/login");
+    }
+
+    @Bean
+    public LoginAuthFailHandler authFailHandler(){
+        return new LoginAuthFailHandler(urlEntryPoint());
+    }
 }
