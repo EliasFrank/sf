@@ -72,11 +72,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     /*@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailService).passwordEncoder(new PasswordEncoder() {
+
+            对传入的密码进行加密
             @Override
             public String encode(CharSequence charSequence) {
                 return EncodePassword.encodePassword(charSequence.toString());
             }
 
+            比较加密后得传入的密码和数据库中查询出来的密码
             @Override
             public boolean matches(CharSequence charSequence, String s) {
                 return passwordEncoder.matches(EncodePassword.encodePassword(charSequence.toString()),s);

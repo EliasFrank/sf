@@ -28,7 +28,7 @@ public class ApiResponse {
         return new ApiResponse(code, message, null);
     }
 
-    public static ApiResponse ofMessage(Object data){
+    public static ApiResponse ofSuccess(Object data){
         return new ApiResponse(Status.SUCCESS.getCode(), Status.SUCCESS.getStandardMessage(), data);
     }
 

@@ -20,6 +20,14 @@
     </properties>
 
     <dependencies>
+        <!--七牛云图片上传-->
+        <dependency>
+            <groupId>com.qiniu</groupId>
+            <artifactId>qiniu-java-sdk</artifactId>
+            <version>[7.4.0, 7.4.99]</version>
+        </dependency>
+
+        
         <!--mybatis-->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
