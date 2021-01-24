@@ -1,4 +1,4 @@
-package com.hl.sf.service;
+package com.hl.sf.service.user;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 

@@ -1,9 +1,9 @@
-package com.hl.sf.service.user;
+package com.hl.sf.service.user.impl;
 
 import com.hl.sf.entity.Role;
 import com.hl.sf.entity.UserInfo;
 import com.hl.sf.repository.UserDao;
-import com.hl.sf.service.MyUserDetailService;
+import com.hl.sf.service.user.MyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;

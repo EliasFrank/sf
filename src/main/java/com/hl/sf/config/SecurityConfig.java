@@ -2,7 +2,7 @@ package com.hl.sf.config;
 
 import com.hl.sf.security.LoginAuthFailHandler;
 import com.hl.sf.security.LoginUrlEntryPoint;
-import com.hl.sf.service.MyUserDetailService;
+import com.hl.sf.service.user.MyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
