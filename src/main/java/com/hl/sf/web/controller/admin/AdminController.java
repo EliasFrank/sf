@@ -68,8 +68,7 @@ public class AdminController {
             }else {
                 return ApiResponse.ofMessage(response.statusCode, response.getInfo());
             }
-        }
-        catch (QiniuException e){
+        }catch (QiniuException e){
             Response response = e.response;
             try {
                 return ApiResponse.ofMessage(response.statusCode, response.bodyString());
@@ -77,8 +76,7 @@ public class AdminController {
                 qiniuException.printStackTrace();
                 return ApiResponse.ofStatus(ApiResponse.Status.INTERNAL_SERVER_ERROR);
             }
-        }
-        catch (IOException e) {
+        }catch (IOException e) {
             return ApiResponse.ofStatus(ApiResponse.Status.INTERNAL_SERVER_ERROR);
         }
     }

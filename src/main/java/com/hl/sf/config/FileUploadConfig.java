@@ -1,5 +1,6 @@
 package com.hl.sf.config;
 
+import com.google.gson.Gson;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
@@ -18,7 +19,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
-
 /**
  * 文件上传配置
  * @author hl2333
@@ -91,4 +91,8 @@ public class FileUploadConfig {
         return new BucketManager(auth(), qiniuConfig());
     }
 
+    @Bean
+    public Gson gson(){
+        return new Gson();
+    }
 }

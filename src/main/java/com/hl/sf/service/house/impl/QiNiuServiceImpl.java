@@ -60,7 +60,13 @@ public class QiNiuServiceImpl implements IQiNiuService, InitializingBean {
 
     @Override
     public Response deleteFile(String key) throws QiniuException {
-        return null;
+        Response hlsf = bucketManager.delete("hlsf", key);
+        int retry = 0;
+        while(hlsf.needRetry() && retry < 3){
+            bucketManager.delete("hlsf", key);
+            retry++;
+        }
+        return hlsf;
     }
 
     @Override
@@ -68,10 +74,7 @@ public class QiNiuServiceImpl implements IQiNiuService, InitializingBean {
         this.putPolicy = new StringMap();
 
         putPolicy.put("returnBody",
-                "{\"key\":\"$(key)\",\"hash\":\"$(etag)\"," +
-                "\"bucket\":\"${bucket}\",\"fname\":\"$(x:fname)\"," +
-                "\"fsize\":\"$(fsize)\",\"width\":\"$(imageInfo.width)\"," +
-                "\"height\":\"$(imageInfo.height)\"");
+                "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"bucket\":\"$(bucket)\",\"width\":\"$(imageInfo.width)\",\"height\":\"$(imageInfo.height)\"}");
     }
     /**
      * 获取上传凭证

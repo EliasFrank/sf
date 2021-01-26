@@ -31,4 +31,15 @@ public class QiNiuUploadTest extends SfApplicationTests {
         }
 
     }
+
+    @Test
+    public void delete() {
+        try {
+            Response response = qiNiuService.deleteFile("FketGEIapy-AB9OsDHpkdaeFkpLv");
+            Assert.assertTrue(response.isOK());
+            System.out.println(response.getInfo());
+        } catch (QiniuException e) {
+            e.printStackTrace();
+        }
+    }
 }
