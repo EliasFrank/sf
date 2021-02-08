@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hl.sf.repository.SupportAddressDao">
+    <select id="findAllByLevel" resultType="com.hl.sf.entity.SupportAddress">
+        SELECT * FROM `support_address` where level = #{level};
+    </select>
+    <select id="findAllRegionsByCity" resultType="com.hl.sf.entity.SupportAddress">
+        SELECT * FROM `support_address` where belong_to = #{city};
+    </select>
+    <select id="findAllSubwayByCity" resultType="com.hl.sf.entity.Subway">
+        SELECT * FROM `subway` where city_en_name = #{city};
+    </select>
+    <select id="findAllSubwayStationBySubwayLine" resultType="com.hl.sf.entity.SubwayStation">
+        SELECT * FROM `subway_station` where subway_id = #{id};
+    </select>
+</mapper>

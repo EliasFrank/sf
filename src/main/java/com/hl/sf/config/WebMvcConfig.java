@@ -1,5 +1,6 @@
 package com.hl.sf.config;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -77,5 +78,15 @@ public class WebMvcConfig implements WebMvcConfigurer,ApplicationContextAware {
                 .addResourceLocations("classpath:/static/");
         //此处还可继续增加目录
     }
+
+    /**
+     * bean 与 dto之间的转换
+     * @return
+     */
+    @Bean
+    public ModelMapper modelMapper(){
+        return new ModelMapper();
+    }
+
 
 }

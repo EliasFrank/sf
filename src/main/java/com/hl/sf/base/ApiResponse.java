@@ -43,6 +43,7 @@ public class ApiResponse {
          */
         SUCCESS(200, "OK"),
         BAD_REQUEST(400, "BadRequest"),
+        NOT_FOUND(404, "Not Find"),
         INTERNAL_SERVER_ERROR(500, "Unknown Internal Error"),
         NOT_VALID_PARAM(40005, "Not Valid Params"),
         NOT_SUPPORTED_OPERATION(40006, "Operation Not Supported"),
