@@ -2,12 +2,14 @@ package com.hl.sf.service.house.impl;
 
 import com.hl.sf.entity.*;
 import com.hl.sf.repository.*;
+import com.hl.sf.service.ServiceMultiResult;
 import com.hl.sf.service.ServiceResult;
 import com.hl.sf.service.house.IHouseService;
 import com.hl.sf.utils.LoginUserUtil;
 import com.hl.sf.web.dto.HouseDTO;
 import com.hl.sf.web.dto.HouseDetailDTO;
 import com.hl.sf.web.dto.HousePictureDTO;
+import com.hl.sf.web.form.DatatableSearch;
 import com.hl.sf.web.form.HouseForm;
 import com.hl.sf.web.form.PhotoForm;
 import org.modelmapper.ModelMapper;
@@ -89,6 +91,12 @@ public class HouseServiceImpl implements IHouseService {
         }
 
         return new ServiceResult<HouseDTO>(true, null, houseDTO);
+    }
+
+    @Override
+    public ServiceMultiResult<HouseDTO> adminQuery(DatatableSearch searchBody) {
+
+        return null;
     }
 
 

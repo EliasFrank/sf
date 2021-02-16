@@ -1,5 +1,6 @@
 package com.hl.sf.web.controller.admin;
 
+import com.hl.sf.base.ApiDataTableResponse;
 import com.hl.sf.base.ApiResponse;
 import com.hl.sf.entity.SupportAddress;
 import com.hl.sf.service.ServiceResult;
@@ -9,6 +10,7 @@ import com.hl.sf.service.house.IQiNiuService;
 import com.hl.sf.web.dto.HouseDTO;
 import com.hl.sf.web.dto.QiNiuPutRet;
 import com.hl.sf.web.dto.SupportAddressDTO;
+import com.hl.sf.web.form.DatatableSearch;
 import com.hl.sf.web.form.HouseForm;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
@@ -72,6 +74,12 @@ public class AdminController {
     @GetMapping("house/list")
     public String houseListPage(){
         return "admin/house-list";
+    }
+
+    @PostMapping("houses")
+    @ResponseBody
+    public ApiDataTableResponse houses(@ModelAttribute DatatableSearch searchBody){
+        return null;
     }
     @PostMapping(value = "upload/photo")
     @ResponseBody
