@@ -2,4 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hl.sf.repository.HouseTagDao">
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `xunwu`.`house_tag`
+        (`house_id`, `name`) VALUES
+        <foreach collection="list" item="item" separator="," close=";">
+            (#{item.houseId}, #{item.name})
+        </foreach>
+    </insert>
 </mapper>

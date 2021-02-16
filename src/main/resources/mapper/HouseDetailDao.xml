@@ -2,4 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hl.sf.repository.HouseDetailDao">
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `xunwu`.`house_detail`
+        (`description`, `layout_desc`, `traffic`, `round_service`,
+        `rent_way`, `address`, `subway_line_id`, `subway_line_name`,
+        `subway_station_id`, `subway_station_name`, `house_id`)
+        VALUES (#{description}, #{layoutDesc}, #{traffic}, #{roundService},
+        #{rentWay}, #{address}, #{subwayLineId}, #{subwayLineName},
+        #{subwayStationId}, #{subwayStationName}, #{houseId});
+    </insert>
 </mapper>

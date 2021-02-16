@@ -2,4 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hl.sf.repository.SubwayStationDao">
+    <select id="findById" resultType="com.hl.sf.entity.SubwayStation">
+        SELECT * FROM `subway_station` where id = #{id};
+    </select>
 </mapper>

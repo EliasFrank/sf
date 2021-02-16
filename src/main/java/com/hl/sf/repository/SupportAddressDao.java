@@ -3,6 +3,7 @@ package com.hl.sf.repository;
 import com.hl.sf.entity.Subway;
 import com.hl.sf.entity.SubwayStation;
 import com.hl.sf.entity.SupportAddress;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -37,5 +38,21 @@ public interface SupportAddressDao {
      * @return
      */
     List<SubwayStation> findAllSubwayStationBySubwayLine(Integer subwayId);
+
+    /**
+     * 根据缩写名称和城市等级，获取城市的具体信息
+     * @param enName 城市缩写名称
+     * @param level 等级
+     * @return 具体信息
+     */
+    SupportAddress findByEnNameAndLevel(@Param("enName") String enName, @Param("level") String level);
+
+    /**
+     * 根据所属地的缩写查询区域的信息
+     * @param regionEnName 区域缩写
+     * @param belongTo 属于什么城市
+     * @return 区域的详细信息
+     */
+    SupportAddress findByEnNameAndBelongTo(@Param("enName")String regionEnName, @Param("level") String belongTo);
 
 }

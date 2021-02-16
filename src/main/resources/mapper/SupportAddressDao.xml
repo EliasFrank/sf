@@ -14,4 +14,14 @@
     <select id="findAllSubwayStationBySubwayLine" resultType="com.hl.sf.entity.SubwayStation">
         SELECT * FROM `subway_station` where subway_id = #{id};
     </select>
+    <select id="findByEnNameAndLevel" resultType="com.hl.sf.entity.SupportAddress">
+        SELECT * FROM `support_address`
+        where en_name = #{enName}
+        and `level` = #{level};
+    </select>
+    <select id="findByEnNameAndBelongTo" resultType="com.hl.sf.entity.SupportAddress">
+        SELECT * FROM `support_address`
+        where en_name = #{enName}
+        and belong_to = #{level}
+    </select>
 </mapper>

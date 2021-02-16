@@ -25,7 +25,7 @@ public class HouseDetail {
 
     private int rentWay;
 
-    private String detailAddress;
+    private String address;
 
     private Long subwayLineId;
 

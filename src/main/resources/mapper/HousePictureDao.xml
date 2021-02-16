@@ -2,4 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hl.sf.repository.HousePictureDao">
+    <insert id="save" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `xunwu`.`house_picture`
+        (`house_id`, `cdn_prefix`, `width`, `height`, `location`, `path`)
+        VALUES
+        <foreach collection="list" item="item" separator="," close=";">
+            (#{item.houseId}, #{item.cdnPrefix}, #{item.width},
+            #{item.height}, #{item.location}, #{item.path})
+        </foreach>
+    </insert>
 </mapper>

@@ -16,4 +16,9 @@ public class HouseTag {
     private Long houseId;
 
     private String name;
+
+    public HouseTag(Long houseId, String name){
+        this.houseId = houseId;
+        this.name = name;
+    }
 }

@@ -1,6 +1,7 @@
-package com.hl.sf.entity;
+package com.hl.sf.dao;
 
 import com.hl.sf.SfApplicationTests;
+import com.hl.sf.entity.UserInfo;
 import com.hl.sf.repository.UserDao;
 import com.hl.sf.utils.EncodePassword;
 import org.junit.Test;
