@@ -1,5 +1,7 @@
 package com.hl.sf.service.house.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.hl.sf.entity.*;
 import com.hl.sf.repository.*;
 import com.hl.sf.service.ServiceMultiResult;
@@ -95,8 +97,18 @@ public class HouseServiceImpl implements IHouseService {
 
     @Override
     public ServiceMultiResult<HouseDTO> adminQuery(DatatableSearch searchBody) {
+        List<HouseDTO> houseDTOS = new ArrayList<>();
 
-        return null;
+        PageHelper.startPage(searchBody.getStart(), searchBody.getLength());
+        List<House> houses = houseDao.findAll();
+        PageInfo<House> pageInfo = new PageInfo<>(houses);
+        pageInfo.getList().forEach(house -> {
+            HouseDTO houseDTO = modelMapper.map(house, HouseDTO.class);
+            houseDTO.setCover(this.cdnPrefix + house.getCover());
+            houseDTOS.add(houseDTO);
+        });
+
+        return new ServiceMultiResult<HouseDTO>(Integer.toUnsignedLong(houseDTOS.size()), houseDTOS);
     }
 
 

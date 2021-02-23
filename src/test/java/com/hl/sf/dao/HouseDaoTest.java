@@ -7,10 +7,19 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
+import java.util.List;
 
 public class HouseDaoTest extends SfApplicationTests {
     @Autowired
     HouseDao houseDao;
+
+    @Test
+    public void findAll() {
+        List<House> all = houseDao.findAll();
+        for (House house : all) {
+            System.out.println(house);
+        }
+    }
 
     @Test
     public void save() {

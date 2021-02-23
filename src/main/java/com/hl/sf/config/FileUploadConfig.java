@@ -56,11 +56,11 @@ public class FileUploadConfig {
     }
 
     /**
-     * 华东机房
+     * 华南机房
      */
     @Bean
     public com.qiniu.storage.Configuration qiniuConfig(){
-        return new com.qiniu.storage.Configuration(Region.region0());
+        return new com.qiniu.storage.Configuration(Region.region2());
     }
 
     /**

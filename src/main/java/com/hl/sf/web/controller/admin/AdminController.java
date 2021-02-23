@@ -3,6 +3,7 @@ package com.hl.sf.web.controller.admin;
 import com.hl.sf.base.ApiDataTableResponse;
 import com.hl.sf.base.ApiResponse;
 import com.hl.sf.entity.SupportAddress;
+import com.hl.sf.service.ServiceMultiResult;
 import com.hl.sf.service.ServiceResult;
 import com.hl.sf.service.house.IAddressService;
 import com.hl.sf.service.house.IHouseService;
@@ -79,7 +80,15 @@ public class AdminController {
     @PostMapping("houses")
     @ResponseBody
     public ApiDataTableResponse houses(@ModelAttribute DatatableSearch searchBody){
-        return null;
+        ServiceMultiResult<HouseDTO> result = houseService.adminQuery(searchBody);
+
+        ApiDataTableResponse response = new ApiDataTableResponse(ApiResponse.Status.SUCCESS);
+        response.setData(result.getResult());
+        response.setRecordsFiltered(result.getTotal());
+        response.setRecordsTotal(result.getTotal());
+        response.setDraw(searchBody.getDraw());
+
+        return response;
     }
     @PostMapping(value = "upload/photo")
     @ResponseBody
