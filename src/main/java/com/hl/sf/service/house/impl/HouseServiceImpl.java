@@ -100,8 +100,10 @@ public class HouseServiceImpl implements IHouseService {
         List<HouseDTO> houseDTOS = new ArrayList<>();
 
         PageHelper.startPage(searchBody.getStart(), searchBody.getLength());
-        List<House> houses = houseDao.findAll();
+        List<House> houses = houseDao.findAll(searchBody);
         PageInfo<House> pageInfo = new PageInfo<>(houses);
+
+
         pageInfo.getList().forEach(house -> {
             HouseDTO houseDTO = modelMapper.map(house, HouseDTO.class);
             houseDTO.setCover(this.cdnPrefix + house.getCover());

@@ -14,4 +14,26 @@
           #{cityEnName}, #{regionEnName}, #{cover},#{direction}, #{distanceToSubway},
           #{parlour}, #{district}, #{adminId}, #{bathroom}, #{street});
     </insert>
+    
+    <select id="findAll" resultType="com.hl.sf.entity.House">
+        select * from house
+        <where>
+            <if test="city != null">
+                city_en_name = #{city}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="createTimeMin != null">
+                and UNIX_TIMESTAMP(create_time) &lt; UNIX_TIMESTAMP(#{createTimeMin})
+            </if>
+            <if test="createTimeMax != null">
+                and UNIX_TIMESTAMP(last_update_time) &lt; UNIX_TIMESTAMP(#{createTimeMax})
+            </if>
+            <if test="title != null">
+                <bind name="title" value="'%' + title + '%'"/>
+                and title like #{title}
+            </if>
+        </where>
+    </select>
 </mapper>

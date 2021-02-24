@@ -1,7 +1,7 @@
 package com.hl.sf.repository;
 
 import com.hl.sf.entity.House;
-import org.apache.ibatis.annotations.Select;
+import com.hl.sf.web.form.DatatableSearch;
 
 import java.util.List;
 
@@ -18,8 +18,8 @@ public interface HouseDao {
 
     /**
      * 查询所有的房源信息
+     * @param searchBody 需要拼接的条件
      * @return 所有的信息
      */
-    @Select("select * from house")
-    List<House> findAll();
+    List<House> findAll(DatatableSearch searchBody);
 }

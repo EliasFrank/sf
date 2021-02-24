@@ -3,6 +3,7 @@ package com.hl.sf.dao;
 import com.hl.sf.SfApplicationTests;
 import com.hl.sf.entity.House;
 import com.hl.sf.repository.HouseDao;
+import com.hl.sf.web.form.DatatableSearch;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,7 +16,11 @@ public class HouseDaoTest extends SfApplicationTests {
 
     @Test
     public void findAll() {
-        List<House> all = houseDao.findAll();
+        DatatableSearch datatableSearch = new DatatableSearch();
+        datatableSearch.setCity("bj");
+//        datatableSearch.setStatus(3);
+        datatableSearch.setTitle("富力");
+        List<House> all = houseDao.findAll(datatableSearch);
         for (House house : all) {
             System.out.println(house);
         }
