@@ -1,6 +1,7 @@
 package com.hl.sf.repository;
 
 import com.hl.sf.entity.UserInfo;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * @author hl2333
@@ -19,4 +20,7 @@ public interface UserDao {
      * @return 用户信息
      */
     UserInfo getUserByName(String s);
+
+    @Select("select * from `user` where id = #{id}")
+    UserInfo findById(Long userId);
 }

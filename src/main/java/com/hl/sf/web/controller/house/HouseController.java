@@ -2,26 +2,23 @@ package com.hl.sf.web.controller.house;
 
 import com.hl.sf.base.ApiResponse;
 import com.hl.sf.base.RentValueBlock;
+import com.hl.sf.entity.SupportAddress;
 import com.hl.sf.service.ServiceMultiResult;
 import com.hl.sf.service.ServiceResult;
 import com.hl.sf.service.house.IAddressService;
 import com.hl.sf.service.house.IHouseService;
-import com.hl.sf.web.dto.HouseDTO;
-import com.hl.sf.web.dto.SubwayDTO;
-import com.hl.sf.web.dto.SubwayStationDTO;
-import com.hl.sf.web.dto.SupportAddressDTO;
+import com.hl.sf.service.user.IUserService;
+import com.hl.sf.web.dto.*;
 import com.hl.sf.web.form.RentSearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 /**
  * @author hl2333
@@ -36,6 +33,10 @@ public class HouseController {
     @Autowired
     @Qualifier("houseService")
     private IHouseService houseService;
+
+    @Autowired
+    @Qualifier("realUserService")
+    private IUserService realUserService;
 
     /**
      * 获取所有城市
@@ -150,4 +151,36 @@ public class HouseController {
 
         return "rent-list";
     }
+
+    @GetMapping("rent/house/show/{id}")
+    public String show(@PathVariable(value = "id") Long houseId,
+                       Model model) {
+        if (houseId <= 0) {
+            return "404";
+        }
+
+        ServiceResult<HouseDTO> serviceResult = houseService.findCompleteOne(houseId);
+        if (!serviceResult.isSuccess()) {
+            return "404";
+        }
+
+        HouseDTO houseDTO = serviceResult.getResult();
+        Map<SupportAddress.Level, SupportAddressDTO>
+                addressMap = addressService.findCityAndRegion(houseDTO.getCityEnName(), houseDTO.getRegionEnName());
+
+        SupportAddressDTO city = addressMap.get(SupportAddress.Level.CITY);
+        SupportAddressDTO region = addressMap.get(SupportAddress.Level.REGION);
+
+        model.addAttribute("city", city);
+        model.addAttribute("region", region);
+
+        ServiceResult<UserDTO> userDTOServiceResult = realUserService.findById(houseDTO.getAdminId());
+        model.addAttribute("agent", userDTOServiceResult.getResult());
+        model.addAttribute("house", houseDTO);
+
+        model.addAttribute("houseCountInDistrict", 0);
+
+        return "house-detail";
+    }
+
 }
