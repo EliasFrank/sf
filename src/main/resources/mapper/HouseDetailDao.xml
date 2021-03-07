@@ -11,4 +11,20 @@
         #{rentWay}, #{address}, #{subwayLineId}, #{subwayLineName},
         #{subwayStationId}, #{subwayStationName}, #{houseId});
     </insert>
+
+    <update id="update">
+        UPDATE `xunwu`.`house_detail`
+        SET `description`= #{description}, `layout_desc`= #{layoutDesc}, `traffic`= #{traffic},
+        `round_service`= #{roundService}, `rent_way`= #{rentWay}, `address`= #{address}
+        , `subway_line_id`=#{subwayLineId}, `subway_line_name`=#{subwayLineName},
+         `subway_station_id`=#{subwayStationId}, `subway_station_name`= #{subwayStationName}
+         WHERE (`id`= #{id});
+    </update>
+
+    <select id="findAllByHouseIdIn" resultType="com.hl.sf.entity.HouseDetail">
+        SELECT * FROM house_detail where house_id in
+        <foreach collection="list" item="houseId" separator="," open="(" close=")">
+            #{houseId}
+        </foreach>
+    </select>
 </mapper>

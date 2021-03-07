@@ -5,9 +5,10 @@ mybatis:
 spring:
   redis:
     database: 0
-    host: 127.0.0.1
+    host: 121.40.174.157
     port: 6379
     lettuce:
       pool:
         min-idle: 1
     timeout: 3000
+    password: 123456

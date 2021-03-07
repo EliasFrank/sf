@@ -36,4 +36,18 @@
             </if>
         </where>
     </select>
+
+    <update id="update">
+        UPDATE `xunwu`.`house`
+        SET `title`=#{title}, `price`=#{price}, `area`=#{area},
+        `room`=#{room}, `floor`=#{floor}, `total_floor`=#{totalFloor},
+        `watch_times`=#{watchTimes}, `build_year`=#{buildYear}, `status`=#{status},
+        `create_time`=#{createTime}, `last_update_time`=#{lastUpdateTime},
+        `city_en_name`=#{cityEnName}, `region_en_name`=#{regionEnName},
+        `cover`=#{cover}, `direction`=#{direction},
+        `distance_to_subway`=#{distanceToSubway}, `parlour`=#{parlour},
+        `district`=#{district}, `admin_id`=#{adminId}, `bathroom`=#{bathroom},
+        `street`=#{street}
+        WHERE `id` = #{id};
+    </update>
 </mapper>

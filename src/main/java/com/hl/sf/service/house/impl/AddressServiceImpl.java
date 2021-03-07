@@ -3,8 +3,11 @@ package com.hl.sf.service.house.impl;
 import com.hl.sf.entity.Subway;
 import com.hl.sf.entity.SubwayStation;
 import com.hl.sf.entity.SupportAddress;
+import com.hl.sf.repository.SubwayDao;
+import com.hl.sf.repository.SubwayStationDao;
 import com.hl.sf.repository.SupportAddressDao;
 import com.hl.sf.service.ServiceMultiResult;
+import com.hl.sf.service.ServiceResult;
 import com.hl.sf.service.house.IAddressService;
 import com.hl.sf.web.dto.SubwayDTO;
 import com.hl.sf.web.dto.SubwayStationDTO;
@@ -26,6 +29,12 @@ public class AddressServiceImpl implements IAddressService {
 
     @Autowired
     SupportAddressDao supportAddressDao;
+
+    @Autowired
+    SubwayDao subwayDao;
+
+    @Autowired
+    SubwayStationDao subwayStationDao;
 
     @Autowired
     ModelMapper modelMapper;
@@ -95,5 +104,44 @@ public class AddressServiceImpl implements IAddressService {
         result.put(SupportAddress.Level.CITY, modelMapper.map(city, SupportAddressDTO.class));
         result.put(SupportAddress.Level.REGION, modelMapper.map(region, SupportAddressDTO.class));
         return result;
+    }
+
+    @Override
+    public ServiceResult<SubwayDTO> findSubway(Long subwayId) {
+        if (subwayId == null) {
+            return ServiceResult.notFound();
+        }
+        Subway subway = subwayDao.findById(subwayId);
+        if (subway == null) {
+            return ServiceResult.notFound();
+        }
+        return ServiceResult.of(modelMapper.map(subway, SubwayDTO.class));
+    }
+
+    @Override
+    public ServiceResult<SubwayStationDTO> findSubwayStation(Long stationId) {
+        if (stationId == null) {
+            return ServiceResult.notFound();
+        }
+        SubwayStation station = subwayStationDao.findById(stationId);
+        if (station == null) {
+            return ServiceResult.notFound();
+        }
+        return ServiceResult.of(modelMapper.map(station, SubwayStationDTO.class));
+    }
+
+    @Override
+    public ServiceResult<SupportAddressDTO> findCity(String cityEnName) {
+        if (cityEnName == null) {
+            return ServiceResult.notFound();
+        }
+
+        SupportAddress supportAddress = supportAddressDao.findByEnNameAndLevel(cityEnName, SupportAddress.Level.CITY.getValue());
+        if (supportAddress == null) {
+            return ServiceResult.notFound();
+        }
+
+        SupportAddressDTO addressDTO = modelMapper.map(supportAddress, SupportAddressDTO.class);
+        return ServiceResult.of(addressDTO);
     }
 }

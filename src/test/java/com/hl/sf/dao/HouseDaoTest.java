@@ -15,6 +15,18 @@ public class HouseDaoTest extends SfApplicationTests {
     HouseDao houseDao;
 
     @Test
+    public void testOrderBy() {
+        List<House> create_time = houseDao.testOrderBy("build_year", "ASC");
+        create_time.forEach(System.out::println);
+    }
+
+    @Test
+    public void findById() {
+        House byId = houseDao.findById(1L);
+        System.out.println(byId);
+    }
+
+    @Test
     public void findAll() {
         DatatableSearch datatableSearch = new DatatableSearch();
         datatableSearch.setCity("bj");

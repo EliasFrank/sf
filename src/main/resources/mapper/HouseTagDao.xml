@@ -9,4 +9,11 @@
             (#{item.houseId}, #{item.name})
         </foreach>
     </insert>
+
+    <select id="findAllByHouseIdIn" resultType="com.hl.sf.entity.HouseTag">
+        SELECT * FROM house_tag where house_id in
+        <foreach collection="list" item="houseId" separator="," open="(" close=")">
+            #{houseId}
+        </foreach>
+    </select>
 </mapper>

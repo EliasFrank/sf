@@ -3,12 +3,35 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hl.sf.repository.HousePictureDao">
     <insert id="save" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO `xunwu`.`house_picture`
-        (`house_id`, `cdn_prefix`, `width`, `height`, `location`, `path`)
-        VALUES
-        <foreach collection="list" item="item" separator="," close=";">
-            (#{item.houseId}, #{item.cdnPrefix}, #{item.width},
-            #{item.height}, #{item.location}, #{item.path})
-        </foreach>
+        <if test="list != null and list.size != 0">
+            INSERT INTO `xunwu`.`house_picture`
+            (`house_id`, `cdn_prefix`, `width`, `height`, `location`, `path`)
+            VALUES
+            <foreach collection="list" item="item" separator="," close=";">
+                (#{item.houseId}, #{item.cdnPrefix}, #{item.width},
+                #{item.height}, #{item.location}, #{item.path})
+            </foreach>
+        </if>
+        <if test="list == null or list.size == 0">
+            INSERT INTO `xunwu`.`mess` (`mess`) VALUES (1);
+        </if>
     </insert>
+    <update id="update">
+        <if test="list != null and list.size != 0">
+            <foreach collection="list" item="picture" separator=";">
+                UPDATE `xunwu`.`house_picture`
+                SET `cdn_prefix`= #{picture.cdnPrefix},
+                `width` = #{picture.width},
+                 `height` = #{picture.height},
+                 <if test="#{picture.location} != null">
+                     `location` = #{picture.location},
+                 </if>
+                 `path` = #{picture.path}
+                 WHERE `id` = #{picture.id}
+            </foreach>
+        </if>
+        <if test="list == null or list.size == 0">
+            update `xunwu`.`house_picture` SET id = 1 where id = 1;
+        </if>
+    </update>
 </mapper>

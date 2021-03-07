@@ -80,7 +80,7 @@
                                onclick="changeSimpleCondition('regionEnName', '*')">不限</a>
                             <tr th:each="region, regionStat: ${regions}">
                                 <a th:attr="data-bind=${region.enName}" href="javascript:void(0);"
-                                   th:onclick="'changeSimpleCondition(\'regionEnName\', \'' + ${region.enName} + '\')'"
+                                   th:onclick="changeSimpleCondition('regionEnName', [[${region.enName}]])";
                                    th:text="${region.cnName}"></a>
                             </tr>
                         </div>
@@ -95,7 +95,7 @@
                             </a>
                             <tr th:each="priceBlock : ${priceBlocks}">
                                 <a th:attr="data-bind=${priceBlock.key}" href="javascript:void(0);"
-                                   th:onclick="'changeSimpleCondition(\'priceBlock\',\'' + ${priceBlock.key} + '\')'"
+                                   th:onclick="changeSimpleCondition('priceBlock', [[${priceBlock.key}]])"
                                    th:text="${priceBlock.value.min < 0} ? (${priceBlock.value.max} + '元以下' ):
                                     (${priceBlock.value.max < 0} ? ${priceBlock.value.min} + '元以上' :
                                      ${priceBlock.value.min} + '-' + ${priceBlock.value.max} + '元')">
@@ -113,7 +113,7 @@
                             </a>
                             <tr th:each="areaBlock : ${areaBlocks}">
                                 <a th:attr="data-bind=${areaBlock.key}" href="javascript:void(0);"
-                                   th:onclick="'changeSimpleCondition(\'areaBlock\',\'' + ${areaBlock.key} + '\')'"
+                                   th:onclick="changeSimpleCondition('areaBlock', [[${areaBlock.key}]])"
                                    th:text="${areaBlock.value.min < 0} ? (${areaBlock.value.max} + '平以下' ):
                                     (${areaBlock.value.max < 0} ? ${areaBlock.value.min} + '平以上' :
                                      ${areaBlock.value.min} + '-' + ${areaBlock.value.max} + '平')">
@@ -179,13 +179,13 @@
             <div class="filter-bar01">
                 <div class="sort-bar" id="sort-bar">
                     <span>排序：</span>
-                    <div class="sort-parent" data-bind="lastUpdateTime">
-                        <a href="javascript:void(0);" onclick="changeSort('lastUpdateTime', 'desc')">
+                    <div class="sort-parent" data-bind="last_update_time">
+                        <a href="javascript:void(0);" onclick="changeSort('last_update_time', 'desc')">
                             <span>默认</span>
                         </a>
                     </div>
-                    <div class="sort-parent" data-bind="createTime">
-                        <a href="javascript:void(0);" onclick="changeSort('createTime', 'desc')">
+                    <div class="sort-parent" data-bind="create_time">
+                        <a href="javascript:void(0);" onclick="changeSort('create_time', 'desc')">
                             <span>最新</span>
                         </a>
                     </div>
@@ -201,8 +201,8 @@
                             <li><a href="javascript:void(0);" onclick="changeSort('area', 'desc')">面积从大到小</a></li>
                         </ul>
                     </div>
-                    <div class="sort-parent" data-bind="distanceToSubway">
-                        <a href="javascript:void(0);" onclick="changeSort('distanceToSubway', 'asc')">
+                    <div class="sort-parent" data-bind="distance_to_subway">
+                        <a href="javascript:void(0);" onclick="changeSort('distance_to_subway', 'asc')">
                             <span>地铁距离近</span>
                         </a>
                     </div>
