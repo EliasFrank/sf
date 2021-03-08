@@ -18,9 +18,19 @@
     <properties>
         <java.version>11</java.version>
         <thymeleaf-extras-springsecurity.version>3.0.3.RELEASE</thymeleaf-extras-springsecurity.version>
+
+        <!--自己自定义es版本依赖，保证和本地一致-->
+        <elasticsearch.version>7.6.0</elasticsearch.version>
     </properties>
 
     <dependencies>
+
+        <!--elasticsearch的原生依赖-->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>7.6.0</version>
+        </dependency>
 
         <!--分页插件-->
         <dependency>
