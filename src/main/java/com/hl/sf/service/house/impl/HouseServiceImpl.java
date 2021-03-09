@@ -9,6 +9,7 @@ import com.hl.sf.repository.*;
 import com.hl.sf.service.ServiceMultiResult;
 import com.hl.sf.service.ServiceResult;
 import com.hl.sf.service.house.IHouseService;
+import com.hl.sf.service.search.impl.SearchServiceImpl;
 import com.hl.sf.utils.LoginUserUtil;
 import com.hl.sf.web.dto.HouseDTO;
 import com.hl.sf.web.dto.HouseDetailDTO;
@@ -21,6 +22,7 @@ import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +57,10 @@ public class HouseServiceImpl implements IHouseService {
 
     @Autowired
     private QiNiuServiceImpl qiNiuService;
+
+    @Autowired
+    @Qualifier("searchService")
+    private SearchServiceImpl searchService;
 
     @Value("${qiniu.cdn.prefix}")
     private String cdnPrefix;
@@ -186,6 +192,14 @@ public class HouseServiceImpl implements IHouseService {
         house.setLastUpdateTime(new Date());
         houseDao.update(house);
 
+        if (house.getStatus() == HouseStatus.PASSES.getValue()) {
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println(house.getStatus());
+            searchService.index(house.getId());
+        }
+
         return ServiceResult.success();
     }
 
@@ -254,6 +268,12 @@ public class HouseServiceImpl implements IHouseService {
 
         houseDao.updateStatus(id, status);
 
+        //上架更新索引，其他情况都要删除索引
+        if (status == HouseStatus.PASSES.getValue()) {
+            searchService.index(id);
+        } else {
+            searchService.remove(id);
+        }
         return ServiceResult.success();
     }
 

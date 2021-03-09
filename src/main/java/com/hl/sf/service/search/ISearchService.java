@@ -15,5 +15,5 @@ public interface ISearchService {
      * 移除房源索引
      * @param houseId
      */
-    void remove(Long houseId);
+    boolean remove(Long houseId);
 }

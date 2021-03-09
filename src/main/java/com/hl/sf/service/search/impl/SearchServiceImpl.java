@@ -12,6 +12,8 @@ import com.hl.sf.service.search.HouseIndexTemplate;
 import com.hl.sf.service.search.ISearchService;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -23,6 +25,7 @@ import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +67,7 @@ public class SearchServiceImpl implements ISearchService {
         House house = houseDao.findById(houseId);
         if (house == null) {
             logger.error("index house {} dose not exist!", houseId);
-            return;
+            return false;
         }
 
         HouseIndexTemplate indexTemplate = new HouseIndexTemplate();
@@ -86,11 +89,49 @@ public class SearchServiceImpl implements ISearchService {
         }
 
 
-        //create
+        //create/update/delete&create
+        SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        TermQueryBuilder termQueryBuilder = new TermQueryBuilder(HouseIndexKey.HOUSE_ID, houseId);
 
-        //update
+        searchSourceBuilder.query(termQueryBuilder);
 
-        //delete & create
+        /****
+         * 记得把查询条件添加进去
+         */
+        searchRequest.source(searchSourceBuilder);
+
+        SearchResponse response = null;
+        try {
+            response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+
+
+        boolean success;
+        long totalHit = response.getHits().getTotalHits().value;
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+
+        if (totalHit == 0){
+           success = create(indexTemplate);
+        } else if (totalHit == 1){
+            System.out.println(response.getHits().getAt(0));
+            String esId = response.getHits().getAt(0).getId();
+            success = update(esId, indexTemplate);
+        } else {
+            success = deleteAndCreate(totalHit, indexTemplate);
+        }
+
+        if (success) {
+            logger.debug("index success with house" + houseId);
+        }
+        return success;
     }
 
     private boolean create(HouseIndexTemplate indexTemplate){
@@ -118,11 +159,10 @@ public class SearchServiceImpl implements ISearchService {
     }
 
     private boolean update(String esId, HouseIndexTemplate indexTemplate){
-        UpdateRequest updateRequest = new UpdateRequest(INDEX_NAME);
+        UpdateRequest updateRequest = new UpdateRequest(INDEX_NAME, esId);
 
         updateRequest.timeout(TimeValue.timeValueSeconds(1));
 
-        updateRequest.id(esId);
         updateRequest.doc(JSON.toJSONString(indexTemplate), XContentType.JSON);
         UpdateResponse response = null;
         try {
@@ -141,7 +181,7 @@ public class SearchServiceImpl implements ISearchService {
 
     }
 
-    private boolean deleteAndCreate(int totalHit, HouseIndexTemplate indexTemplate){
+    private boolean deleteAndCreate(long totalHit, HouseIndexTemplate indexTemplate){
         DeleteByQueryRequest deleteByQueryRequest = new DeleteByQueryRequest(INDEX_NAME);
 
         QueryBuilder queryBuilder = new TermQueryBuilder(HouseIndexKey.HOUSE_ID, indexTemplate.getHouseId());
@@ -161,7 +201,7 @@ public class SearchServiceImpl implements ISearchService {
             logger.warn("need delete {}. but {} was deleted", totalHit, deleted);
             return false;
         } else {
-            return true;
+            return create(indexTemplate);
         }
 
         /*SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
@@ -177,7 +217,22 @@ public class SearchServiceImpl implements ISearchService {
     }
 
     @Override
-    public void remove(Long houseId) {
+    public boolean remove(Long houseId) {
+        DeleteByQueryRequest deleteByQueryRequest = new DeleteByQueryRequest(INDEX_NAME);
 
+        QueryBuilder queryBuilder = new TermQueryBuilder(HouseIndexKey.HOUSE_ID, houseId);
+
+        deleteByQueryRequest.setQuery(queryBuilder);
+
+        BulkByScrollResponse bulkByScrollResponse = null;
+        try {
+            bulkByScrollResponse = restHighLevelClient.deleteByQuery(deleteByQueryRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        long deleted = bulkByScrollResponse.getDeleted();
+        logger.debug("delete total " + deleted);
+        return true;
     }
 }
