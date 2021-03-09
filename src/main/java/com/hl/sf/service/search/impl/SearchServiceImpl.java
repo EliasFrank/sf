@@ -112,16 +112,10 @@ public class SearchServiceImpl implements ISearchService {
 
         boolean success;
         long totalHit = response.getHits().getTotalHits().value;
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
 
         if (totalHit == 0){
            success = create(indexTemplate);
         } else if (totalHit == 1){
-            System.out.println(response.getHits().getAt(0));
             String esId = response.getHits().getAt(0).getId();
             success = update(esId, indexTemplate);
         } else {

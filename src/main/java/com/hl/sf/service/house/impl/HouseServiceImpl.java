@@ -193,10 +193,6 @@ public class HouseServiceImpl implements IHouseService {
         houseDao.update(house);
 
         if (house.getStatus() == HouseStatus.PASSES.getValue()) {
-            System.out.println();
-            System.out.println();
-            System.out.println();
-            System.out.println(house.getStatus());
             searchService.index(house.getId());
         }
 
