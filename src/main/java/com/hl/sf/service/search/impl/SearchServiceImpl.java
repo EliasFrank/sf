@@ -2,16 +2,16 @@ package com.hl.sf.service.search.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.hl.sf.entity.House;
+import com.hl.sf.entity.HouseDetail;
+import com.hl.sf.entity.HouseTag;
 import com.hl.sf.repository.HouseDao;
+import com.hl.sf.repository.HouseDetailDao;
+import com.hl.sf.repository.HouseTagDao;
 import com.hl.sf.service.search.HouseIndexKey;
 import com.hl.sf.service.search.HouseIndexTemplate;
 import com.hl.sf.service.search.ISearchService;
-import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -22,7 +22,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
-import org.elasticsearch.index.reindex.DeleteByQueryRequestBuilder;
 import org.elasticsearch.rest.RestStatus;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -31,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author hl2333
@@ -47,13 +48,19 @@ public class SearchServiceImpl implements ISearchService {
     private HouseDao houseDao;
 
     @Autowired
+     private HouseDetailDao houseDetailDao;
+
+    @Autowired
+    private HouseTagDao houseTagDao;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
     private RestHighLevelClient restHighLevelClient;
 
     @Override
-    public void index(Long houseId) {
+    public boolean index(Long houseId) {
         House house = houseDao.findById(houseId);
         if (house == null) {
             logger.error("index house {} dose not exist!", houseId);
@@ -61,6 +68,23 @@ public class SearchServiceImpl implements ISearchService {
         }
 
         HouseIndexTemplate indexTemplate = new HouseIndexTemplate();
+        modelMapper.map(house, indexTemplate);
+
+        HouseDetail detail = houseDetailDao.findByHouseId(houseId);
+        if (detail == null){
+            logger.error("detail is null");
+            return false;
+        }
+
+        modelMapper.map(detail, indexTemplate);
+
+        List<HouseTag> tags = houseTagDao.findAllByHouseId(houseId);
+        if (tags != null && !tags.isEmpty()) {
+            List<String> tagStrings = new ArrayList<>();
+            tags.forEach(houseTag -> tagStrings.add(houseTag.getName()));
+            indexTemplate.setTags(tagStrings);
+        }
+
 
         //create
 
