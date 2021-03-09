@@ -9,11 +9,12 @@ public interface ISearchService {
      * @param houseId
      * @return
      */
-    boolean index(Long houseId);
+    void index(Long houseId);
 
     /**
      * 移除房源索引
      * @param houseId
      */
-    boolean remove(Long houseId);
+    void remove(Long houseId);
+
 }

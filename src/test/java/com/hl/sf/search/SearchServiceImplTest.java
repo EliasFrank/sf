@@ -12,15 +12,13 @@ public class SearchServiceImplTest extends SfApplicationTests {
     @Test
     public void testIndex() {
         Long targetHouseId = 15L;
-        boolean success = searchService.index(targetHouseId);
-        System.out.println(success);
+        searchService.index(targetHouseId);
     }
 
     @Test
     public void testRemove() {
         Long targerHouseId = 15L;
-        boolean remove = searchService.remove(targerHouseId);
-        System.out.println(remove);
+        searchService.remove(targerHouseId);
 
     }
 }

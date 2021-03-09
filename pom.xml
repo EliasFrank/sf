@@ -25,6 +25,12 @@
 
     <dependencies>
 
+        <!--kafka-->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
         <!--elasticsearch的原生依赖-->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
