@@ -9,10 +9,12 @@ import com.hl.sf.entity.HouseTag;
 import com.hl.sf.repository.HouseDao;
 import com.hl.sf.repository.HouseDetailDao;
 import com.hl.sf.repository.HouseTagDao;
+import com.hl.sf.service.ServiceMultiResult;
 import com.hl.sf.service.search.HouseIndexKey;
 import com.hl.sf.service.search.HouseIndexMessage;
 import com.hl.sf.service.search.HouseIndexTemplate;
 import com.hl.sf.service.search.ISearchService;
+import com.hl.sf.web.form.RentSearch;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
@@ -23,12 +25,14 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,8 +190,12 @@ public class SearchServiceImpl implements ISearchService {
 
         indexRequest.timeout(TimeValue.timeValueSeconds(1));
 
-        indexRequest.source(JSON.toJSONString(indexTemplate), XContentType.JSON);
 
+        indexRequest.source(JSON.toJSONString(indexTemplate), XContentType.JSON);
+        /*System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println(JSON.toJSONString(indexTemplate));*/
         IndexResponse response = null;
         try {
             response = restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
@@ -291,6 +299,48 @@ public class SearchServiceImpl implements ISearchService {
     @Override
     public void remove(Long houseId) {
         this.remove(houseId, 0);
+    }
+
+    @Override
+    public ServiceMultiResult<Long> query(RentSearch rentSearch) {
+        SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+
+        boolQueryBuilder.filter(new TermQueryBuilder(HouseIndexKey.CITY_EN_NAME, rentSearch.getCityEnName()));
+
+        if (rentSearch.getRegionEnName() != null && !"*".equals(rentSearch.getRegionEnName())){
+            boolQueryBuilder.filter(new TermQueryBuilder(HouseIndexKey.REGION_EN_NAME, rentSearch.getRegionEnName()));
+        }
+
+        searchSourceBuilder.query(boolQueryBuilder)
+                .sort(rentSearch.getOrderBy(), SortOrder.fromString(rentSearch.getOrderDirection()))
+                .from(rentSearch.getStart())
+                .size(rentSearch.getSize());
+        searchRequest.source(searchSourceBuilder);
+
+        logger.debug(searchRequest.toString());
+
+        List<Long> houseIds = new ArrayList<>();
+        SearchResponse response = null;
+        try {
+            response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        if (response.status() != RestStatus.OK){
+            logger.warn("search status is no for " + rentSearch);
+            return new ServiceMultiResult<Long>(0L, houseIds);
+        }
+        response.getHits().forEach(hit -> {
+            houseIds.add(Long.parseLong(String.valueOf
+                    (hit.getSourceAsMap().get(HouseIndexKey.HOUSE_ID))));
+        });
+
+        return new ServiceMultiResult<Long>(response.getHits().getTotalHits().value, houseIds);
     }
 
     public void remove(Long houseId, int retry){
