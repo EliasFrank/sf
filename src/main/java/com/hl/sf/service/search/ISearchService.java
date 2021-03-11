@@ -3,6 +3,8 @@ package com.hl.sf.service.search;
 import com.hl.sf.service.ServiceMultiResult;
 import com.hl.sf.web.form.RentSearch;
 
+import java.util.List;
+
 /**
  * @author hl2333
  */
@@ -26,4 +28,6 @@ public interface ISearchService {
      * @return
      */
     ServiceMultiResult<Long> query(RentSearch rentSearch);
+
+    ServiceMultiResult<List<String>> suggest(String prefix);
 }

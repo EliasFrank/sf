@@ -1,6 +1,8 @@
 package com.hl.sf.service.search.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hl.sf.base.RentValueBlock;
@@ -11,18 +13,18 @@ import com.hl.sf.repository.HouseDao;
 import com.hl.sf.repository.HouseDetailDao;
 import com.hl.sf.repository.HouseTagDao;
 import com.hl.sf.service.ServiceMultiResult;
-import com.hl.sf.service.search.HouseIndexKey;
-import com.hl.sf.service.search.HouseIndexMessage;
-import com.hl.sf.service.search.HouseIndexTemplate;
-import com.hl.sf.service.search.ISearchService;
+import com.hl.sf.service.search.*;
 import com.hl.sf.web.form.RentSearch;
+import org.apache.http.util.EntityUtils;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
+import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -97,6 +99,59 @@ public class SearchServiceImpl implements ISearchService {
         } catch (IOException e) {
             logger.error("cannot parse json for " + content, e);
         }
+    }
+
+    @Override
+    public ServiceMultiResult<List<String>> suggest(String prefix) {
+        return null;
+    }
+
+    private boolean updateSuggest(HouseIndexTemplate indexTemplate){
+        List<String> suggests = new ArrayList<>();
+        try {
+            getAnalyze(indexTemplate.getTitle()).forEach(word -> suggests.add(word));
+            getAnalyze(indexTemplate.getLayoutDesc()).forEach(word -> suggests.add(word));
+            getAnalyze(indexTemplate.getRoundService()).forEach(word -> suggests.add(word));
+            getAnalyze(indexTemplate.getDescription()).forEach(word -> suggests.add(word));
+            getAnalyze(indexTemplate.getSubwayLineName()).forEach(word -> suggests.add(word));
+            getAnalyze(indexTemplate.getSubwayStationName()).forEach(word -> suggests.add(word));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
+        //定制化小区自动补全
+        List<HouseSuggest> houseSuggests = new ArrayList<>();
+        suggests.add(indexTemplate.getDistrict());
+        suggests.forEach(s -> {
+            HouseSuggest suggestTemp = new HouseSuggest();
+            suggestTemp.setInput(s)
+            houseSuggests.add(suggestTemp);
+        });
+        indexTemplate.setSuggest(houseSuggests);
+        return true;
+    }
+
+    public List<String> getAnalyze(String text) throws Exception {
+        List<String> list = new ArrayList<String>();
+        Request request = new Request("GET", "_analyze");
+        JSONObject entity = new JSONObject();
+        entity.put("analyzer", "ik_smart");
+        //entity.put("analyzer", "ik_smart");
+        /**
+         * 设置分词的值
+         */
+        entity.put("text", text);
+
+        request.setJsonEntity(entity.toJSONString());
+        Response response = this.restHighLevelClient.getLowLevelClient().performRequest(request);
+        JSONObject tokens = JSONObject.parseObject(EntityUtils.toString(response.getEntity()));
+        JSONArray arrays = tokens.getJSONArray("tokens");
+        for (int i = 0; i < arrays.size(); i++)
+        {
+            JSONObject obj = JSON.parseObject(arrays.getString(i));
+            list.add(obj.getString("token"));
+        }
+        return list;
     }
 
     @Override
@@ -185,6 +240,9 @@ public class SearchServiceImpl implements ISearchService {
     }
 
     private boolean create(HouseIndexTemplate indexTemplate){
+        if (!updateSuggest(indexTemplate)){
+            return false;
+        }
         IndexRequest indexRequest = new IndexRequest(INDEX_NAME);
 
         indexRequest.timeout(TimeValue.timeValueSeconds(1));
@@ -214,6 +272,9 @@ public class SearchServiceImpl implements ISearchService {
     }
 
     private boolean update(String esId, HouseIndexTemplate indexTemplate){
+        if (!updateSuggest(indexTemplate)) {
+            return false;
+        }
         UpdateRequest updateRequest = new UpdateRequest(INDEX_NAME, esId);
 
         updateRequest.timeout(TimeValue.timeValueSeconds(1));

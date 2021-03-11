@@ -104,6 +104,7 @@ public class HouseController {
             return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
         }
 
+        return null;
     }
 
     @GetMapping("rent/house")
