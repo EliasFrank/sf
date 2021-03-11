@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import com.hl.sf.base.RentValueBlock;
 import com.hl.sf.entity.House;
 import com.hl.sf.entity.HouseDetail;
@@ -13,6 +14,7 @@ import com.hl.sf.repository.HouseDao;
 import com.hl.sf.repository.HouseDetailDao;
 import com.hl.sf.repository.HouseTagDao;
 import com.hl.sf.service.ServiceMultiResult;
+import com.hl.sf.service.ServiceResult;
 import com.hl.sf.service.search.*;
 import com.hl.sf.web.form.RentSearch;
 import org.apache.http.util.EntityUtils;
@@ -32,8 +34,15 @@ import org.elasticsearch.index.query.*;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +53,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author hl2333
@@ -55,7 +66,6 @@ public class SearchServiceImpl implements ISearchService {
     private static final Logger logger  = LoggerFactory.getLogger(ISearchService.class);
 
     private static final String INDEX_NAME = "xunwu";
-//    private static final String INDEX_TYPE = "house";
     private static final String INDEX_TOPIC = "house_build";
 
     @Autowired
@@ -102,8 +112,90 @@ public class SearchServiceImpl implements ISearchService {
     }
 
     @Override
-    public ServiceMultiResult<List<String>> suggest(String prefix) {
-        return null;
+    public ServiceResult<List<String>> suggest(String prefix) {
+        CompletionSuggestionBuilder suggestion = SuggestBuilders.completionSuggestion("suggest").prefix(prefix).size(5);
+
+        SuggestBuilder suggestBuilder = new SuggestBuilder();
+        suggestBuilder.addSuggestion("autocomplete", suggestion);
+
+        SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.suggest(suggestBuilder);
+
+        searchRequest.source(searchSourceBuilder);
+
+        SearchResponse response = null;
+        try {
+            response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+        Suggest suggest = response.getSuggest();
+        if (suggest == null) {
+            return ServiceResult.of(new ArrayList());
+        }
+
+        Suggest.Suggestion result = suggest.getSuggestion("autocomplete");
+
+        int maxSuggest = 0;
+        Set<String> suggestSet = new HashSet<>();
+
+        for (Object term : result.getEntries()) {
+            if (term instanceof CompletionSuggestion.Entry) {
+                CompletionSuggestion.Entry item = (CompletionSuggestion.Entry) term;
+
+                if (item.getOptions().isEmpty()) {
+                    continue;
+                }
+
+                for (CompletionSuggestion.Entry.Option option : item.getOptions()){
+                    String tip = option.getText().string();
+                    if (suggestSet.contains(tip)) {
+                        continue;
+                    }
+                    suggestSet.add(tip);
+                    maxSuggest++;
+                }
+            }
+
+            if (maxSuggest > 5) {
+                break;
+            }
+        }
+        List<String> suggests = Lists.newArrayList(suggestSet.toArray(new String[]{}));
+        return ServiceResult.of(suggests);
+    }
+
+    @Override
+    public ServiceResult<Long> aggregateDistrictHouse(String cityEnName, String regionEnName, String district) {
+        SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+        boolQueryBuilder.filter(new TermQueryBuilder(HouseIndexKey.CITY_EN_NAME, cityEnName))
+                .filter(QueryBuilders.termQuery(HouseIndexKey.REGION_EN_NAME, regionEnName))
+                .filter(QueryBuilders.termQuery(HouseIndexKey.DISTRICT, district));
+
+        searchSourceBuilder.query(boolQueryBuilder);
+        searchSourceBuilder.aggregation(
+                AggregationBuilders.terms(HouseIndexKey.AGG_DISTRICT)
+                        .field(HouseIndexKey.DISTRICT)).size(0);
+
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse response = null;
+        try {
+            response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+        if (response.status() == RestStatus.OK) {
+            Terms terms = response.getAggregations().get(HouseIndexKey.AGG_DISTRICT);
+            if (terms.getBuckets() != null && !terms.getBuckets().isEmpty()){
+                return ServiceResult.of(terms.getBucketByKey(district).getDocCount());
+            } else {
+                logger.warn("failed to aggregate for " + HouseIndexKey.AGG_DISTRICT);
+            }
+        }
+        return ServiceResult.of(0L);
     }
 
     private boolean updateSuggest(HouseIndexTemplate indexTemplate){
@@ -124,7 +216,7 @@ public class SearchServiceImpl implements ISearchService {
         suggests.add(indexTemplate.getDistrict());
         suggests.forEach(s -> {
             HouseSuggest suggestTemp = new HouseSuggest();
-            suggestTemp.setInput(s)
+            suggestTemp.setInput(s);
             houseSuggests.add(suggestTemp);
         });
         indexTemplate.setSuggest(houseSuggests);

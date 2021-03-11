@@ -1,6 +1,7 @@
 package com.hl.sf.service.search;
 
 import com.hl.sf.service.ServiceMultiResult;
+import com.hl.sf.service.ServiceResult;
 import com.hl.sf.web.form.RentSearch;
 
 import java.util.List;
@@ -29,5 +30,7 @@ public interface ISearchService {
      */
     ServiceMultiResult<Long> query(RentSearch rentSearch);
 
-    ServiceMultiResult<List<String>> suggest(String prefix);
+    ServiceResult<List<String>> suggest(String prefix);
+
+    ServiceResult<Long> aggregateDistrictHouse(String cityEnName, String regionEnName, String district);
 }

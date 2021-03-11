@@ -7,6 +7,7 @@ import com.hl.sf.service.ServiceMultiResult;
 import com.hl.sf.service.ServiceResult;
 import com.hl.sf.service.house.IAddressService;
 import com.hl.sf.service.house.IHouseService;
+import com.hl.sf.service.search.ISearchService;
 import com.hl.sf.service.user.IUserService;
 import com.hl.sf.web.dto.*;
 import com.hl.sf.web.form.RentSearch;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +39,10 @@ public class HouseController {
     @Autowired
     @Qualifier("realUserService")
     private IUserService realUserService;
+
+    @Autowired
+    @Qualifier("searchService")
+    private ISearchService searchService;
 
     /**
      * 获取所有城市
@@ -103,8 +109,8 @@ public class HouseController {
         if (prefix.isEmpty()) {
             return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
         }
-
-        return null;
+        ServiceResult<List<String>> result = this.searchService.suggest(prefix);
+        return ApiResponse.ofSuccess(result.getResult());
     }
 
     @GetMapping("rent/house")
@@ -188,7 +194,8 @@ public class HouseController {
         model.addAttribute("agent", userDTOServiceResult.getResult());
         model.addAttribute("house", houseDTO);
 
-        model.addAttribute("houseCountInDistrict", 0);
+        ServiceResult<Long> aggResult = searchService.aggregateDistrictHouse(city.getEnName(), region.getEnName(), houseDTO.getDistrict());
+        model.addAttribute("houseCountInDistrict", aggResult.getResult());
 
         return "house-detail";
     }
