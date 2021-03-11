@@ -3,6 +3,7 @@ package com.hl.sf.service.search.impl;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hl.sf.base.RentValueBlock;
 import com.hl.sf.entity.House;
 import com.hl.sf.entity.HouseDetail;
 import com.hl.sf.entity.HouseTag;
@@ -25,9 +26,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.rest.RestStatus;
@@ -159,6 +158,7 @@ public class SearchServiceImpl implements ISearchService {
          */
         searchRequest.source(searchSourceBuilder);
 
+        logger.debug(searchRequest.toString());
         SearchResponse response = null;
         try {
             response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
@@ -166,7 +166,6 @@ public class SearchServiceImpl implements ISearchService {
             logger.error(e.getMessage());
             return;
         }
-
 
         boolean success;
         long totalHit = response.getHits().getTotalHits().value;
@@ -199,6 +198,7 @@ public class SearchServiceImpl implements ISearchService {
         IndexResponse response = null;
         try {
             response = restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
+
         } catch (IOException e) {
             logger.error("error to index house " + indexTemplate.getHouseId(), e);
             return false;
@@ -314,6 +314,50 @@ public class SearchServiceImpl implements ISearchService {
             boolQueryBuilder.filter(new TermQueryBuilder(HouseIndexKey.REGION_EN_NAME, rentSearch.getRegionEnName()));
         }
 
+        RentValueBlock area = RentValueBlock.matchArea(rentSearch.getAreaBlock());
+        if (!RentValueBlock.ALL.equals(area)) {
+            RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery(HouseIndexKey.AREA);
+            if (area.getMax() > 0) {
+                rangeQueryBuilder.lte(area.getMax());
+            }
+            if (area.getMin() > 0) {
+                rangeQueryBuilder.gte(area.getMin());
+            }
+            boolQueryBuilder.filter(rangeQueryBuilder);
+        }
+
+        RentValueBlock price = RentValueBlock.matchPrice(rentSearch.getPriceBlock());
+        if (!RentValueBlock.ALL.equals(price)) {
+            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery(HouseIndexKey.PRICE);
+            if (price.getMax() > 0) {
+                rangeQuery.lte(price.getMax());
+            }
+            if (price.getMin() > 0) {
+                rangeQuery.gte(price.getMin());
+            }
+            boolQueryBuilder.filter(rangeQuery);
+        }
+
+        if (rentSearch.getDirection() > 0) {
+            boolQueryBuilder.filter(
+                    QueryBuilders.termQuery(HouseIndexKey.DIRECTION, rentSearch.getDirection())
+            );
+        }
+
+        if (rentSearch.getRentWay() > -1) {
+            boolQueryBuilder.filter(
+                    QueryBuilders.termQuery(HouseIndexKey.RENT_WAY, rentSearch.getRentWay())
+            );
+        }
+        boolQueryBuilder.must(
+                QueryBuilders.multiMatchQuery(rentSearch.getKeywords(),
+                        HouseIndexKey.TITLE,
+                        HouseIndexKey.TRAFFIC,
+                        HouseIndexKey.DISTRICT,
+                        HouseIndexKey.ROUND_SERVICE,
+                        HouseIndexKey.SUBWAY_LINE_NAME,
+                        HouseIndexKey.SUBWAY_STATION_NAME
+                ));
         searchSourceBuilder.query(boolQueryBuilder)
                 .sort(rentSearch.getOrderBy(), SortOrder.fromString(rentSearch.getOrderDirection()))
                 .from(rentSearch.getStart())

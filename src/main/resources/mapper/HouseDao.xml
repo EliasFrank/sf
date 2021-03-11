@@ -50,4 +50,11 @@
         `street`=#{street}
         WHERE `id` = #{id};
     </update>
+
+    <select id="findAllByIds" resultType="com.hl.sf.entity.House">
+        SELECT * FROM `house` where id in
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

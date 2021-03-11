@@ -36,4 +36,5 @@ public interface IHouseService {
     ServiceResult updateStatus(Long id, int value);
 
     ServiceMultiResult<HouseDTO> simpleQuery(RentSearch rentSearch);
+    ServiceMultiResult<HouseDTO> query(RentSearch rentSearch);
 }

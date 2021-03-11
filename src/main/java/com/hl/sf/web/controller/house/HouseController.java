@@ -97,6 +97,15 @@ public class HouseController {
         return ApiResponse.ofSuccess(result.getResult());
     }
 
+    @GetMapping("rent/house/autocomplete")
+    @ResponseBody
+    public ApiResponse autoComplete(@RequestParam(value = "prefix") String prefix){
+        if (prefix.isEmpty()) {
+            return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
+        }
+
+    }
+
     @GetMapping("rent/house")
     public String rentHousePage(@ModelAttribute RentSearch rentSearch,
                                 Model model, HttpSession session,
@@ -129,7 +138,7 @@ public class HouseController {
             return "redirect:/index";
         }
 
-        ServiceMultiResult<HouseDTO> serviceMultiResult = houseService.simpleQuery(rentSearch);
+        ServiceMultiResult<HouseDTO> serviceMultiResult = houseService.query(rentSearch);
 
         model.addAttribute("total", serviceMultiResult.getTotal());
 //        model.addAttribute("total", 0);

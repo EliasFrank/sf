@@ -43,4 +43,6 @@ public interface HouseDao {
 
     @Select("select * from house order by ${param1} ${param2}")
     List<House> testOrderBy(String order, String direction);
+
+    List<House> findAllByIds(List<Long> list);
 }
