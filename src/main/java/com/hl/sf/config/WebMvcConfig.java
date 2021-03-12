@@ -2,6 +2,7 @@ package com.hl.sf.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -22,6 +23,9 @@ public class WebMvcConfig implements WebMvcConfigurer,ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
+    @Value("${spring.thymeleaf.cache}")
+    private boolean thymeleafCacheEnable = true;
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
@@ -36,6 +40,7 @@ public class WebMvcConfig implements WebMvcConfigurer,ApplicationContextAware {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
         templateResolver.setApplicationContext(applicationContext);
 
+        templateResolver.setCacheable(thymeleafCacheEnable);
         templateResolver.setCharacterEncoding("UTF-8");
         return templateResolver;
     }

@@ -16,6 +16,10 @@ import com.hl.sf.repository.HouseTagDao;
 import com.hl.sf.service.ServiceMultiResult;
 import com.hl.sf.service.ServiceResult;
 import com.hl.sf.service.search.*;
+import com.hl.sf.service.search.entity.HouseIndexKey;
+import com.hl.sf.service.search.entity.HouseIndexMessage;
+import com.hl.sf.service.search.entity.HouseIndexTemplate;
+import com.hl.sf.service.search.entity.HouseSuggest;
 import com.hl.sf.web.form.RentSearch;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.action.index.IndexRequest;
@@ -503,8 +507,10 @@ public class SearchServiceImpl implements ISearchService {
             );
         }
         boolQueryBuilder.must(
+                QueryBuilders.matchQuery(HouseIndexKey.TITLE, rentSearch.getKeywords()).boost(2.0f)
+        );
+        boolQueryBuilder.should(
                 QueryBuilders.multiMatchQuery(rentSearch.getKeywords(),
-                        HouseIndexKey.TITLE,
                         HouseIndexKey.TRAFFIC,
                         HouseIndexKey.DISTRICT,
                         HouseIndexKey.ROUND_SERVICE,

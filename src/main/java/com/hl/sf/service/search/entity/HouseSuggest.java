@@ -1,4 +1,4 @@
-package com.hl.sf.service.search;
+package com.hl.sf.service.search.entity;
 
 
 /**

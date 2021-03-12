@@ -1,4 +1,4 @@
-package com.hl.sf.service.search;
+package com.hl.sf.service.search.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

@@ -1,4 +1,4 @@
-package com.hl.sf.service.search;
+package com.hl.sf.service.search.entity;
 
 /**
  * 索引关键词统一定义
