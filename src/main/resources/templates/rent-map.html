@@ -6,6 +6,7 @@
     <meta http-equiv="Content-language" content="zh-CN"/>
     <meta name="format-detection" content="telephone=no"/>
     <meta name="applicable-device" content="pc">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 
     <title>寻屋地图</title>
     <meta name="description" content="方便快捷寻屋"/>
@@ -23,19 +24,19 @@
         <input id="cityCnName" th:value="${city.cnName}" hidden="hidden">
         <div class="r-hd2">
             <ol class="order-select">
-                <li class="s-default on" data-bind="lastUpdateTime" data-direction="desc">默认</li>
+                <li class="s-default on" data-bind="last_update_time" data-direction="desc">默认</li>
                 <li class="s-price s-asc" data-bind="price" data-direction="asc">租金低
                     <i class="asc">↑</i>
                 </li>
                 <li class="s-area s-asc" data-bind="area" data-direction="desc">面积大
                     <i class="asc">↓</i></li>
-                <li class="s-new" data-bind="createTime" data-direction="desc">最新</li>
+                <li class="s-new" data-bind="create_time" data-direction="desc">最新</li>
             </ol>
         </div>
         <div class="r-hd3" style="display: block;">
             <div class="r-hd3-content">
                 <ol class="i-card i-card-1">
-                    <li class="i-card-name" th:text="${city.CnName}">北京市</li>
+                    <li class="i-card-name" th:text="${city.cnName}">北京市</li>
                     <li class=""><span th:text="${total}">0</span>套正在出租</li>
                     <li>共<span th:text="${#lists.size(regions)}"></span>个区域</li>
                 </ol>
@@ -87,9 +88,9 @@
     </div>
 </div>
 <!--<div th:include="common :: footer"></div>-->
-<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=LBeLzV5OFQnGBwH4sxacjSdPUw9d2tRm"></script>
-<script type="text/javascript" src="/static/js/baidu-map/TextIconOverlay.js"></script>
-<script type="text/javascript" src="/static/js/baidu-map/MarkerClusterer.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=LBeLzV5OFQnGBwH4sxacjSdPUw9d2tRm&s=1"></script>
+<!--<script type="text/javascript" src="/static/js/baidu-map/TextIconOverlay.js"></script>-->
+<!--<script type="text/javascript" src="/static/js/baidu-map/MarkerClusterer.js"></script>-->
 <script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
 <script type="text/javascript" src="/static/lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="/static/lib/layui/layui.js"></script>

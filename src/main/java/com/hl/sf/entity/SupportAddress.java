@@ -14,6 +14,8 @@ public class SupportAddress {
     private String level;
     private String baiduMapLng;
     private String BaiduMapLat;
+    private double baiduMapLongitude;
+    private double baiduMapLatitude;
 
     /**
      * 定义行政级别

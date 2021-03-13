@@ -5,6 +5,7 @@ import com.hl.sf.service.ServiceResult;
 import com.hl.sf.web.dto.HouseDTO;
 import com.hl.sf.web.form.DatatableSearch;
 import com.hl.sf.web.form.HouseForm;
+import com.hl.sf.web.form.MapSearch;
 import com.hl.sf.web.form.RentSearch;
 
 /**
@@ -36,5 +37,10 @@ public interface IHouseService {
     ServiceResult updateStatus(Long id, int value);
 
     ServiceMultiResult<HouseDTO> simpleQuery(RentSearch rentSearch);
+
     ServiceMultiResult<HouseDTO> query(RentSearch rentSearch);
+
+    ServiceMultiResult<HouseDTO> wholeMapQuery(MapSearch mapSearch);
+
+    ServiceMultiResult<HouseDTO> boundMapQuery(MapSearch mapSearch);
 }

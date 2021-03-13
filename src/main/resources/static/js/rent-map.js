@@ -1,10 +1,10 @@
 /**
- * Created by 瓦力.
+ * @author hl2333
  */
 var regionCountMap = {}, // 地区数据
     labels = [], // 标签列表
     params = {
-        orderBy: 'lastUpdateTime',
+        orderBy: 'last_update_time',
         orderDirection: 'desc'
     },
     customLayer; // 麻点图
@@ -13,8 +13,8 @@ function load(city, regions, aggData) {
     // 百度地图API功能
     var map = new BMap.Map("allmap", {minZoom: 12}); // 创建实例。设置地图显示最大级别为城市
     var point = new BMap.Point(city.baiduMapLongitude, city.baiduMapLatitude); // 城市中心
+    // var point = new BMap.Point(116.42188470126446,39.93857401298612);
     map.centerAndZoom(point, 12); // 初始化地图，设置中心点坐标及地图级别
-
     map.addControl(new BMap.NavigationControl({enableGeolocation: true})); // 添加比例尺控件
     map.addControl(new BMap.ScaleControl({anchor: BMAP_ANCHOR_TOP_LEFT})); // 左上角
     map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
@@ -49,7 +49,7 @@ function drawRegion(map, regionList) {
     var textLabel;
     for (var i = 0; i < regionList.length; i++) {
 
-        regionPoint = new BMap.Point(regionList[i].baiduMapLongitude, regionList[i].baiduMapLatitude);
+        regionPoint = new BMap.Point(regionList[i].baiduMapLongtitude, regionList[i].baiduMapLatitude);
 
         var houseCount = 0;
         if (regionList[i].en_name in regionCountMap) {
@@ -59,6 +59,7 @@ function drawRegion(map, regionList) {
         var textContent = '<p style="margin-top: 20px; pointer-events: none">' +
             regionList[i].cn_name + '</p>' + '<p style="pointer-events: none">' +
             houseCount + '套</p>';
+            // 0 + '套</p>'
         textLabel = new BMap.Label(textContent, {
             position: regionPoint, // 标签位置
             offset: new BMap.Size(-40, 20) // 文本偏移量
@@ -141,7 +142,7 @@ function drawRegion(map, regionList) {
 
     if (!customLayer) {
         customLayer = new BMap.CustomLayer({
-            geotableId: 175730,
+            geotableId: 217490,
             q: '', // 检索关键字
             tags: '', // 空格分隔的字符串
             filter: '', // 过滤条件，参考：http://lbsyun.baidu.com/index.php?title=lbscloud/api/geosearch
@@ -195,7 +196,6 @@ function drawRegion(map, regionList) {
         map.addOverlay(marker);
     }
 }
-
 function mapResize(_map) {
     var bounds = _map.getBounds(),
         southWest = bounds.getSouthWest(), // 西南角
@@ -299,7 +299,6 @@ function loadHouseData() {
         });
     });
 }
-
 // 排序切换
 $('ol.order-select li').on('click', function () {
     $('ol.order-select li.on').removeClass('on');

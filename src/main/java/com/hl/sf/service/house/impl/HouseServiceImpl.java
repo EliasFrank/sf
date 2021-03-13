@@ -14,13 +14,12 @@ import com.hl.sf.utils.LoginUserUtil;
 import com.hl.sf.web.dto.HouseDTO;
 import com.hl.sf.web.dto.HouseDetailDTO;
 import com.hl.sf.web.dto.HousePictureDTO;
-import com.hl.sf.web.form.DatatableSearch;
-import com.hl.sf.web.form.HouseForm;
-import com.hl.sf.web.form.PhotoForm;
-import com.hl.sf.web.form.RentSearch;
+import com.hl.sf.web.form.*;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
 
 @Service("houseService")
 public class HouseServiceImpl implements IHouseService {
@@ -62,6 +62,7 @@ public class HouseServiceImpl implements IHouseService {
     @Value("${qiniu.cdn.prefix}")
     private String cdnPrefix;
 
+    private static final Logger logger = LoggerFactory.getLogger(IHouseService.class);
     @Override
     public ServiceResult<HouseDTO> save(HouseForm houseForm) {
         HouseDetail houseDetail = new HouseDetail();
@@ -285,6 +286,29 @@ public class HouseServiceImpl implements IHouseService {
         return simpleQuery(rentSearch);
 
     }
+
+    @Override
+    public ServiceMultiResult<HouseDTO> wholeMapQuery(MapSearch mapSearch) {
+        ServiceMultiResult<Long> serviceResult = searchService.mapQuery(mapSearch.getCityEnName(), mapSearch.getOrderBy(),
+                mapSearch.getOrderDirection(), mapSearch.getStart(), mapSearch.getSize());
+        if (serviceResult == null || serviceResult.getTotal() == 0){
+            return new ServiceMultiResult<HouseDTO>(0L, new ArrayList<>());
+        }
+        List<HouseDTO> houses = wrapperHouseResult(serviceResult.getResult());
+        return new ServiceMultiResult<HouseDTO>(serviceResult.getTotal(), houses);
+    }
+
+    @Override
+    public ServiceMultiResult<HouseDTO> boundMapQuery(MapSearch mapSearch) {
+        ServiceMultiResult<Long> serviceResult = searchService.mapQuery(mapSearch);
+        if (serviceResult.getTotal() == 0) {
+            return new ServiceMultiResult<HouseDTO>(0L, new ArrayList<>());
+        }
+
+        List<HouseDTO> houses = wrapperHouseResult(serviceResult.getResult());
+        return new ServiceMultiResult<HouseDTO>(serviceResult.getTotal(), houses);
+    }
+
     private List<HouseDTO> wrapperHouseResult(List<Long> houseIds) {
         List<HouseDTO> result = new ArrayList<>();
 

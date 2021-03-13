@@ -20,4 +20,10 @@ public class SupportAddressDTO {
     private String cnName;
 
     private String level;
+
+    @JsonProperty(value = "baidu_map_lng")
+    private Double baiduMapLongitude;
+
+    @JsonProperty(value = "baidu_map_lat")
+    private Double baiduMapLatitude;
 }

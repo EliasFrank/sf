@@ -3,6 +3,7 @@ package com.hl.sf.service.house;
 import com.hl.sf.entity.SupportAddress;
 import com.hl.sf.service.ServiceMultiResult;
 import com.hl.sf.service.ServiceResult;
+import com.hl.sf.service.search.entity.BaiduMapLocation;
 import com.hl.sf.web.dto.SubwayDTO;
 import com.hl.sf.web.dto.SubwayStationDTO;
 import com.hl.sf.web.dto.SupportAddressDTO;
@@ -53,4 +54,27 @@ public interface IAddressService {
     ServiceResult<SubwayStationDTO> findSubwayStation(Long subwayStationId);
 
     ServiceResult<SupportAddressDTO> findCity(String cityEnName);
+
+    ServiceResult<BaiduMapLocation> getBaiduMapLocation(String city, String address);
+
+    /**
+     * 上传百度LBS数据
+     * @param location
+     * @param title
+     * @param address
+     * @param houseId
+     * @param price
+     * @param area
+     * @return
+     */
+    ServiceResult lbsUpload(BaiduMapLocation location, String title, String address,
+                            long houseId, int price, int area);
+
+    /**
+     * 移除LBS数据
+     * @param houseId
+     * @return
+     */
+    ServiceResult removeLbs(Long houseId);
+
 }
