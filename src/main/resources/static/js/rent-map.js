@@ -1,5 +1,5 @@
 /**
- * @author hl2333
+ * Created by 瓦力.
  */
 var regionCountMap = {}, // 地区数据
     labels = [], // 标签列表
@@ -12,9 +12,10 @@ var regionCountMap = {}, // 地区数据
 function load(city, regions, aggData) {
     // 百度地图API功能
     var map = new BMap.Map("allmap", {minZoom: 12}); // 创建实例。设置地图显示最大级别为城市
-    var point = new BMap.Point(city.baiduMapLongitude, city.baiduMapLatitude); // 城市中心
-    // var point = new BMap.Point(116.42188470126446,39.93857401298612);
+    var point = new BMap.Point(city.baidu_map_lng, city.baidu_map_lat); // 城市中心
+    // var point = new BMap.Point(39, 116);
     map.centerAndZoom(point, 12); // 初始化地图，设置中心点坐标及地图级别
+
     map.addControl(new BMap.NavigationControl({enableGeolocation: true})); // 添加比例尺控件
     map.addControl(new BMap.ScaleControl({anchor: BMAP_ANCHOR_TOP_LEFT})); // 左上角
     map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
@@ -49,7 +50,7 @@ function drawRegion(map, regionList) {
     var textLabel;
     for (var i = 0; i < regionList.length; i++) {
 
-        regionPoint = new BMap.Point(regionList[i].baiduMapLongtitude, regionList[i].baiduMapLatitude);
+        regionPoint = new BMap.Point(regionList[i].baidu_map_lng, regionList[i].baidu_map_lat);
 
         var houseCount = 0;
         if (regionList[i].en_name in regionCountMap) {
@@ -59,7 +60,6 @@ function drawRegion(map, regionList) {
         var textContent = '<p style="margin-top: 20px; pointer-events: none">' +
             regionList[i].cn_name + '</p>' + '<p style="pointer-events: none">' +
             houseCount + '套</p>';
-            // 0 + '套</p>'
         textLabel = new BMap.Label(textContent, {
             position: regionPoint, // 标签位置
             offset: new BMap.Size(-40, 20) // 文本偏移量
@@ -173,7 +173,7 @@ function drawRegion(map, regionList) {
 
         // 搜索信息提示框
         var searchInfoWindow = new BMapLib.SearchInfoWindow(map, content, {
-           title: customPoi.title, // 标题
+            title: customPoi.title, // 标题
             width: 290,
             height: 60,
             panel: "panel", // 搜索结果面板
@@ -196,6 +196,7 @@ function drawRegion(map, regionList) {
         map.addOverlay(marker);
     }
 }
+
 function mapResize(_map) {
     var bounds = _map.getBounds(),
         southWest = bounds.getSouthWest(), // 西南角
@@ -299,6 +300,7 @@ function loadHouseData() {
         });
     });
 }
+
 // 排序切换
 $('ol.order-select li').on('click', function () {
     $('ol.order-select li.on').removeClass('on');

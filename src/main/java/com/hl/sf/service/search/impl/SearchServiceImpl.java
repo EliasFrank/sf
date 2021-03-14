@@ -234,7 +234,7 @@ public class SearchServiceImpl implements ISearchService {
             logger.warn(e.getMessage());
         }
 
-        logger.debug(response.toString());
+//        logger.debug(response.toString());
         List<HouseBucketDTO> buckets = new ArrayList<>();
         if (response.status() != RestStatus.OK) {
             logger.warn("Aggregate status is not ok for " + searchRequest);
@@ -473,7 +473,6 @@ public class SearchServiceImpl implements ISearchService {
             this.index(message.getHouseId(), message.getRetry() + 1);
         } else {
             logger.debug("Index success with house " + houseId);
-
         }
     }
 
@@ -487,10 +486,6 @@ public class SearchServiceImpl implements ISearchService {
 
 
         indexRequest.source(JSON.toJSONString(indexTemplate), XContentType.JSON);
-        /*System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println(JSON.toJSONString(indexTemplate));*/
         IndexResponse response = null;
         try {
             response = restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
@@ -668,7 +663,7 @@ public class SearchServiceImpl implements ISearchService {
                 .size(rentSearch.getSize());
         searchRequest.source(searchSourceBuilder);
 
-        logger.debug(searchRequest.toString());
+//        logger.debug(searchRequest.toString());
 
         List<Long> houseIds = new ArrayList<>();
         SearchResponse response = null;

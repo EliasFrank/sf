@@ -12,6 +12,8 @@ import com.hl.sf.service.user.IUserService;
 import com.hl.sf.web.dto.*;
 import com.hl.sf.web.form.MapSearch;
 import com.hl.sf.web.form.RentSearch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -45,6 +47,8 @@ public class HouseController {
     @Autowired
     @Qualifier("searchService")
     private ISearchService searchService;
+
+    public static final Logger logger = LoggerFactory.getLogger(HouseController.class);
 
     /**
      * 获取所有城市

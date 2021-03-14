@@ -221,7 +221,7 @@ public class AddressServiceImpl implements IAddressService {
         StringBuilder sb = new StringBuilder(LBS_QUERY_API);
         sb.append("geotable_id=").append("217490").append("&")
                 .append("ak=").append(BAIDU_MAP_KEY).append("&")
-                .append("houseId=").append(houseId).append(",").append('-');
+                .append("houseId=").append(houseId).append(",").append(houseId);
         logger.error(sb.toString());
         HttpGet get = new HttpGet(sb.toString());
         try {
@@ -322,6 +322,8 @@ public class AddressServiceImpl implements IAddressService {
                 JsonNode jsonLocation = jsonNode.get("result").get("location");
                 location.setLongitude(jsonLocation.get("lng").asDouble());
                 location.setLatitude(jsonLocation.get("lat").asDouble());
+                logger.debug(jsonLocation.get("lng").asText());
+                logger.debug(jsonLocation.get("lat").asText());
                 return ServiceResult.of(location);
             }
 
@@ -343,6 +345,7 @@ public class AddressServiceImpl implements IAddressService {
         }
 
         SupportAddressDTO addressDTO = modelMapper.map(supportAddress, SupportAddressDTO.class);
+
         return ServiceResult.of(addressDTO);
     }
 }
