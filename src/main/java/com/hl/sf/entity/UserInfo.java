@@ -1,17 +1,20 @@
 package com.hl.sf.entity;
 
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author hl2333
  */
 @Data
-public class UserInfo {
+public class UserInfo implements Serializable {
     private Long id;
 
-    private String name;
+    private String username;
 
     private String password;
 
@@ -19,15 +22,17 @@ public class UserInfo {
 
     private String phoneNumber;
 
-    private String createTime;
+    private Date createTime;
 
-    private String lastLoginTime;
+    private Date lastLoginTime;
 
-    private String lastUpdateTime;
+    private Date lastUpdateTime;
 
     private String avatar;
 
     private int status;
 
     private List<Role> roles;
+
+    private List<GrantedAuthority> authorityList;
 }

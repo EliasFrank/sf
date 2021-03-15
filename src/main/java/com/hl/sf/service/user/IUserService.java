@@ -12,4 +12,7 @@ public interface IUserService {
 
     ServiceResult<UserDTO> findById(Long userId);
 
+    UserInfo findUserByTelephone(String telephone);
+
+    UserInfo addUserByPhone(String telephone);
 }

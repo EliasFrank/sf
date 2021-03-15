@@ -1,5 +1,6 @@
 package com.hl.sf.config;
 
+import com.hl.sf.security.AuthFilter;
 import com.hl.sf.security.LoginAuthFailHandler;
 import com.hl.sf.security.LoginUrlEntryPoint;
 import com.hl.sf.service.user.MyUserDetailService;
@@ -7,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * @author hl2333
@@ -30,6 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     BCryptPasswordEncoder passwordEncoder;
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class);
 //        http.formLogin();
 //        http.csrf().ignoringAntMatchers("/druid/*");
         http.headers().frameOptions().sameOrigin();
@@ -99,5 +103,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public LoginAuthFailHandler authFailHandler(){
         return new LoginAuthFailHandler(urlEntryPoint());
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManager() {
+        AuthenticationManager authenticationManager = null;
+        try {
+            authenticationManager = super.authenticationManager();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return authenticationManager;
+    }
+
+    @Bean
+    public AuthFilter authFilter() {
+        AuthFilter authFilter = new AuthFilter();
+        authFilter.setAuthenticationManager(authenticationManager());
+        authFilter.setAuthenticationFailureHandler(authFailHandler());
+        return authFilter;
     }
 }

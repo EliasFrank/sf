@@ -23,4 +23,9 @@ public interface UserDao {
 
     @Select("select * from `user` where id = #{id}")
     UserInfo findById(Long userId);
+
+    @Select("select * from `user` where phone_number = #{phone}")
+    UserInfo findUserByPhone(String telephone);
+
+    void save(UserInfo user);
 }

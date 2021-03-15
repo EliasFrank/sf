@@ -38,7 +38,7 @@ public class MyUserDetailServiceImpl implements MyUserDetailService {
         List<GrantedAuthority> authorities = getAuthorities(roles);
 
 //        System.out.println(userInfo.getPassword());
-        User user = new User(userInfo.getName(),
+        User user = new User(userInfo.getUsername(),
 //                EncodePassword.encodePassword(userInfo.getPassword()),
                 userInfo.getPassword(),
                 userInfo.getStatus()==0?false:true,

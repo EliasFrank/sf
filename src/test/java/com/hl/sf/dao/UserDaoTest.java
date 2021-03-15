@@ -7,6 +7,8 @@ import com.hl.sf.utils.EncodePassword;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
+
 public class UserDaoTest extends SfApplicationTests {
     @Autowired
     private UserDao userDao;
@@ -22,5 +24,19 @@ public class UserDaoTest extends SfApplicationTests {
     public void testUtilEncode() {
         String s = EncodePassword.encodePassword("123");
         System.out.println(s);
+    }
+
+    @Test
+    public void saveTest() {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUsername("ffafa");
+        userInfo.setPhoneNumber("12313313");
+        Date date = new Date();
+        userInfo.setCreateTime(date);
+        userInfo.setLastLoginTime(date);
+        userInfo.setLastUpdateTime(date);
+        userInfo.setStatus(1);
+        userDao.save(userInfo);
+        System.out.println(userInfo);
     }
 }

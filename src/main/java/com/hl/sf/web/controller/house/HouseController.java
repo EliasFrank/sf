@@ -3,12 +3,14 @@ package com.hl.sf.web.controller.house;
 import com.hl.sf.base.ApiResponse;
 import com.hl.sf.base.RentValueBlock;
 import com.hl.sf.entity.SupportAddress;
+import com.hl.sf.service.ISmsService;
 import com.hl.sf.service.ServiceMultiResult;
 import com.hl.sf.service.ServiceResult;
 import com.hl.sf.service.house.IAddressService;
 import com.hl.sf.service.house.IHouseService;
 import com.hl.sf.service.search.ISearchService;
 import com.hl.sf.service.user.IUserService;
+import com.hl.sf.utils.LoginUserUtil;
 import com.hl.sf.web.dto.*;
 import com.hl.sf.web.form.MapSearch;
 import com.hl.sf.web.form.RentSearch;
@@ -31,6 +33,10 @@ import java.util.Map;
  */
 @Controller
 public class HouseController {
+
+    @Autowired
+    @Qualifier("smsService")
+    private ISmsService smsService;
 
     @Autowired
     @Qualifier("addressService")
@@ -244,5 +250,19 @@ public class HouseController {
         ApiResponse response = ApiResponse.ofSuccess(serviceMultiResult.getResult());
         response.setMore(serviceMultiResult.getTotal() > (mapSearch.getStart() + mapSearch.getSize()));
         return response;
+    }
+
+    @GetMapping(value = "sms/code")
+    @ResponseBody
+    public ApiResponse smsCode(@RequestParam("telephone") String telephone) {
+        if (!LoginUserUtil.checkTelephone(telephone)) {
+            return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), "请输入正确的手机号");
+        }
+        ServiceResult<String> result = smsService.sendSms(telephone);
+        if (result.isSuccess()) {
+            return ApiResponse.ofSuccess("");
+        } else {
+            return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), result.getMessage());
+        }
     }
 }
