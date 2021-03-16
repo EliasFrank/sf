@@ -10,7 +10,7 @@ import com.hl.sf.service.ServiceMultiResult;
 import com.hl.sf.service.ServiceResult;
 import com.hl.sf.service.house.IHouseService;
 import com.hl.sf.service.search.impl.SearchServiceImpl;
-import com.hl.sf.utils.LoginUserUtil;
+import com.hl.sf.service.user.IUserService;
 import com.hl.sf.web.dto.HouseDTO;
 import com.hl.sf.web.dto.HouseDetailDTO;
 import com.hl.sf.web.dto.HousePictureDTO;
@@ -56,6 +56,10 @@ public class HouseServiceImpl implements IHouseService {
     private QiNiuServiceImpl qiNiuService;
 
     @Autowired
+    @Qualifier("realUserService")
+    private IUserService userService;
+
+    @Autowired
     @Qualifier("searchService")
     private SearchServiceImpl searchService;
 
@@ -77,7 +81,7 @@ public class HouseServiceImpl implements IHouseService {
         Date now = new Date();
         house.setCreateTime(now);
         house.setLastUpdateTime(now);
-        house.setAdminId(LoginUserUtil.getLoginUserId());
+        house.setAdminId(userService.getLoginUserId());
         houseDao.save(house);
 
         houseDetail.setHouseId(house.getId());

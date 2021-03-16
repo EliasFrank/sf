@@ -15,4 +15,8 @@ public interface IUserService {
     UserInfo findUserByTelephone(String telephone);
 
     UserInfo addUserByPhone(String telephone);
+
+    ServiceResult modifyUserProfile(String profile, String value);
+
+    Long getLoginUserId();
 }

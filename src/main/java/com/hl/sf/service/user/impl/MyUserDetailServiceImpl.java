@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +27,15 @@ public class MyUserDetailServiceImpl implements MyUserDetailService {
     UserDao userDao;
 
     @Autowired
+    HttpSession session;
+    @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         UserInfo userInfo = userDao.getUserByName(s);
+        session.setAttribute("loginUserId", userInfo.getId());
+
         List<Role> roles = userInfo.getRoles();
         if(roles == null || roles.isEmpty()){
             throw new DisabledException("权限非法");

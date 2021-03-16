@@ -3,7 +3,6 @@ package com.hl.sf.entity;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -11,7 +10,7 @@ import java.util.List;
  * @author hl2333
  */
 @Data
-public class UserInfo implements Serializable {
+public class UserInfo {
     private Long id;
 
     private String username;

@@ -1,35 +1,19 @@
 package com.hl.sf.utils;
 
-import com.hl.sf.entity.UserInfo;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import java.util.regex.Pattern;
 
 /**
  * @author hl2333
  */
 public class LoginUserUtil {
+
     private static final String PHONE_REGEX = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8}$";
     private static final Pattern PHONE_PATTERN = Pattern.compile(PHONE_REGEX);
 
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
-    private static UserInfo load(){
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal != null && principal instanceof UserInfo){
-            return (UserInfo) principal;
-        }
-        return null;
-    }
 
-    public static Long getLoginUserId(){
-        UserInfo userInfo = load();
-        if (userInfo == null) {
-            return -1L;
-        }
-        return userInfo.getId();
-    }
     /**
      * 验证手机号码
      *

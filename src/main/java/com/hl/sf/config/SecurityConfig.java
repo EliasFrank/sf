@@ -61,6 +61,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/")
                 .deleteCookies("JSESSIONID")
                 .invalidateHttpSession(true)
+                .deleteCookies("loginUserId")
+                .invalidateHttpSession(true)
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(urlEntryPoint())
@@ -90,6 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             }
         });
     }*/
+
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
