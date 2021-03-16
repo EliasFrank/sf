@@ -5,7 +5,7 @@ package com.hl.sf.web.dto;
  */
 public class UserDTO {
     private Long id;
-    private String name;
+    private String username;
     private String avatar;
     private String phoneNumber;
     private String lastLoginTime;
@@ -18,12 +18,12 @@ public class UserDTO {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String name) {
+        this.username = name;
     }
 
     public String getAvatar() {

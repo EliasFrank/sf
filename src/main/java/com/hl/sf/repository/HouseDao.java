@@ -45,4 +45,7 @@ public interface HouseDao {
     List<House> testOrderBy(String order, String direction);
 
     List<House> findAllByIds(List<Long> list);
+
+    @Update("UPDATE house set watch_times = watch_times + 1 where id = #{id}")
+    void updateWatchTimes(Long houseId);
 }

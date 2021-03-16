@@ -11,6 +11,7 @@ import com.hl.sf.service.ServiceResult;
 import com.hl.sf.service.house.IAddressService;
 import com.hl.sf.service.house.IHouseService;
 import com.hl.sf.service.house.IQiNiuService;
+import com.hl.sf.service.user.IUserService;
 import com.hl.sf.web.dto.*;
 import com.hl.sf.web.form.DatatableSearch;
 import com.hl.sf.web.form.HouseForm;
@@ -18,6 +19,7 @@ import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,15 +41,19 @@ public class AdminController {
 
     @Autowired
     @Qualifier("qiNiuService")
-    IQiNiuService qiNiuService;
+    private IQiNiuService qiNiuService;
 
     @Autowired
     @Qualifier("addressService")
-    IAddressService addressService;
+    private IAddressService addressService;
 
     @Autowired
     @Qualifier("houseService")
-    IHouseService houseService;
+    private IHouseService houseService;
+
+    @Autowired
+    @Qualifier("realUserService")
+    private IUserService userService;
 
     @Autowired
     Gson gson;
@@ -322,5 +328,48 @@ public class AdminController {
         }
         return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(),
                 result.getMessage());
+    }
+
+    @GetMapping("house/subscribe/list")
+    @ResponseBody
+    public ApiResponse subscribeList(@RequestParam(value = "draw") int draw,
+                                     @RequestParam(value = "start") int start,
+                                     @RequestParam(value = "length") int size) {
+        ServiceMultiResult<Pair<HouseDTO, HouseSubscribeDTO>> result = houseService.findSubscribeList(start, size);
+
+        ApiDataTableResponse response = new ApiDataTableResponse(ApiResponse.Status.SUCCESS);
+        response.setData(result.getResult());
+        response.setDraw(draw);
+        response.setRecordsFiltered(result.getTotal());
+        response.setRecordsTotal(result.getTotal());
+        return response;
+    }
+    @GetMapping("user/{userId}")
+    @ResponseBody
+    public ApiResponse getUserInfo(@PathVariable(value = "userId") Long userId) {
+        if (userId == null || userId < 1) {
+            return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
+        }
+
+        ServiceResult<UserDTO> serviceResult = userService.findById(userId);
+        if (!serviceResult.isSuccess()) {
+            return ApiResponse.ofStatus(ApiResponse.Status.NOT_FOUND);
+        } else {
+            return ApiResponse.ofSuccess(serviceResult.getResult());
+        }
+    }
+    @PostMapping("finish/subscribe")
+    @ResponseBody
+    public ApiResponse finishSubscribe(@RequestParam(value = "house_id") Long houseId) {
+        if (houseId < 1) {
+            return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
+        }
+
+        ServiceResult serviceResult = houseService.finishSubscribe(houseId);
+        if (serviceResult.isSuccess()) {
+            return ApiResponse.ofSuccess("");
+        } else {
+            return ApiResponse.ofMessage(ApiResponse.Status.BAD_REQUEST.getCode(), serviceResult.getMessage());
+        }
     }
 }
